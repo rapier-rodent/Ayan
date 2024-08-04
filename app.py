@@ -25,14 +25,9 @@ if date_input:
     # Convert the date to Julian day
     jd = swe.julday(date_input.year, date_input.month, date_input.day)
 
-    # Calculate the position of the Sun (or any other celestial body)
-    sun_position, _ = swe.calc_ut(jd, swe.SUN)  # Extract the position and ignore the second value
-
-    # Calculate the sidereal time
-    sidereal_time = swe.sidtime(jd)
-
-    # Calculate the ayanamsa value
-    ayanamsa_value = sun_position[0] - sidereal_time  # Use sun_position[0] for the ecliptic longitude
+    # Calculate the ayanamsa value using the Krishnamurti method
+    # Get the ayanamsa value directly from swe.ayanamsa
+    ayanamsa_value = swe.ayanamsa(jd)
 
     # Convert ayanamsa value to DMS
     dms_value = decimal_to_dms(ayanamsa_value)
