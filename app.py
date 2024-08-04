@@ -20,15 +20,15 @@ if date_input:
 
     # Calculate the position of the Sun (or any other celestial body)
     # The Sun is represented by swe.SUN, which is 0 in the Swiss Ephemeris
-    sun_position = swe.calc_ut(jd, swe.SUN)
+    sun_position, _ = swe.calc_ut(jd, swe.SUN)  # Extract the position and ignore the second value
 
     # Calculate the sidereal time
     sidereal_time = swe.sidtime(jd)
 
     # Calculate the ayanamsa value
     # Ayanamsa is typically calculated as the difference between the tropical and sidereal positions
-    # Here, we assume a simple calculation for demonstration purposes
-    ayanamsa_value = sun_position[0] - sidereal_time
+    # Here we assume a simplified calculation for demonstration purposes
+    ayanamsa_value = sun_position[0] - sidereal_time  # Use sun_position[0] for the ecliptic longitude
 
     # Display the result
     st.write(f"Ayanamsa value for {date_input}: {ayanamsa_value:.6f}")
