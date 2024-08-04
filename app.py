@@ -1,37 +1,45 @@
 import streamlit as st
-import swisseph as swe
-
-# Set the path to the ephemeris files (update this path accordingly)
-# Note: In Streamlit Cloud, you may need to upload the ephemeris files or use a public URL.
-swe.set_ephe_path('ephemeris/')  # Update this path if necessary
-
-# Set the ayanamsa mode to Krishnamurti
-swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
-
-# Function to convert decimal degrees to DMS format
-def decimal_to_dms(decimal_degrees):
-    degrees = int(decimal_degrees)
-    minutes = int((decimal_degrees - degrees) * 60)
-    seconds = (decimal_degrees - degrees - minutes / 60) * 3600
-    return degrees, minutes, seconds
+import requests
 
 # Streamlit app title
 st.title("Krishnamurti Ayanamsa Calculator")
 
-# Date input
-date_input = st.date_input("Select a date", value=None)
+# User inputs for date, time, and location
+st.header("Input Details")
 
-if date_input:
-    # Convert the date to Julian day
-    jd = swe.julday(date_input.year, date_input.month, date_input.day)
+year = st.number_input("Year", min_value=1900, max_value=2100, value=2024)
+month = st.number_input("Month", min_value=1, max_value=12, value=8)
+day = st.number_input("Day", min_value=1, max_value=31, value=5)
+hour = st.number_input("Hour (UTC)", min_value=0, max_value=23, value=12)
+minute = st.number_input("Minute (UTC)", min_value=0, max_value=59, value=0)
+second = st.number_input("Second (UTC)", min_value=0, max_value=59, value=0)
+utc = st.selectbox("UTC Timezone", ["UTC", "GMT", "IST", "PST", "EST"])
+latitude = st.number_input("Latitude", format="%.6f", value=0.0)
+longitude = st.number_input("Longitude", format="%.6f", value=0.0)
 
-    # Calculate the ayanamsa value using the Krishnamurti method
-    # Get the ayanamsa value directly from swe.ayanamsa
-    ayanamsa_value = swe.ayanamsa(jd)
+# Button to calculate Ayanamsa
+if st.button("Calculate Krishnamurti Ayanamsa"):
+    # Prepare the input data for the API call
+    input_data = {
+        "year": year,
+        "month": month,
+        "day": day,
+        "hour": hour,
+        "minute": minute,
+        "second": second,
+        "utc": utc,
+        "latitude": latitude,
+        "longitude": longitude,
+        "ayanamsa": "Krishnamurti",
+        "house_system": "Placidus"
+    }
 
-    # Convert ayanamsa value to DMS
-    dms_value = decimal_to_dms(ayanamsa_value)
+    # Call the API to get the horary data
+    response = requests.post("http://127.0.0.1:8088/get_all_horary_data", json=input_data)
 
-    # Display the result
-    st.write(f"Ayanamsa value for {date_input}: {ayanamsa_value:.6f} degrees")
-    st.write(f"Ayanamsa in DMS format: {dms_value[0]}° {dms_value[1]}′ {dms_value[2]:.2f}″")
+    if response.status_code == 200:
+        data = response.json()
+        ayanamsa_value = data.get("planets_data", [])
+        st.success(f"Krishnamurti Ayanamsa values: {ayanamsa_value}")
+    else:
+        st.error("Error retrieving data. Please check your inputs and try again.")
