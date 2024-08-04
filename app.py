@@ -20,4 +20,22 @@ def calculate_krishnamurti_ayanamsa():
         ayanamsa = "Krishnamurti"
 
         # Create an instance of VedicHoroscopeData
-        horoscope = VedicAst
+        horoscope = VedicAstro.VedicHoroscopeData(year, month, day, hour, minute, second, utc, latitude, longitude, ayanamsa)
+
+        # Generate the chart
+        chart = horoscope.generate_chart()
+
+        # Get the ayanamsa value
+        ayanamsa_value = horoscope.get_ayanamsa()
+
+        return ayanamsa_value
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        return None
+
+# Streamlit app
+st.title("Krishnamurti Ayanamsa Calculator")
+if st.button("Calculate Ayanamsa for Today"):
+    ayanamsa_value = calculate_krishnamurti_ayanamsa()
+    if ayanamsa_value is not None:
+        st.write(f"Krishnamurti Ayanamsa for today: {ayanamsa_value}")
