@@ -8,6 +8,13 @@ swe.set_ephe_path('ephemeris/')  # Update this path if necessary
 # Set the ayanamsa mode to Krishnamurti
 swe.set_sid_mode(swe.SIDM_KRISHNAMURTI)
 
+# Function to convert decimal degrees to DMS format
+def decimal_to_dms(decimal_degrees):
+    degrees = int(decimal_degrees)
+    minutes = int((decimal_degrees - degrees) * 60)
+    seconds = (decimal_degrees - degrees - minutes / 60) * 3600
+    return degrees, minutes, seconds
+
 # Streamlit app title
 st.title("Krishnamurti Ayanamsa Calculator")
 
@@ -19,16 +26,17 @@ if date_input:
     jd = swe.julday(date_input.year, date_input.month, date_input.day)
 
     # Calculate the position of the Sun (or any other celestial body)
-    # The Sun is represented by swe.SUN, which is 0 in the Swiss Ephemeris
     sun_position, _ = swe.calc_ut(jd, swe.SUN)  # Extract the position and ignore the second value
 
     # Calculate the sidereal time
     sidereal_time = swe.sidtime(jd)
 
     # Calculate the ayanamsa value
-    # Ayanamsa is typically calculated as the difference between the tropical and sidereal positions
-    # Here we assume a simplified calculation for demonstration purposes
     ayanamsa_value = sun_position[0] - sidereal_time  # Use sun_position[0] for the ecliptic longitude
 
+    # Convert ayanamsa value to DMS
+    dms_value = decimal_to_dms(ayanamsa_value)
+
     # Display the result
-    st.write(f"Ayanamsa value for {date_input}: {ayanamsa_value:.6f}")
+    st.write(f"Ayanamsa value for {date_input}: {ayanamsa_value:.6f} degrees")
+    st.write(f"Ayanamsa in DMS format: {dms_value[0]}° {dms_value[1]}′ {dms_value[2]:.2f}″")
