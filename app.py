@@ -1,6 +1,11 @@
 import streamlit as st
 from datetime import datetime
 from vedicastro import VedicAstro
+import swisseph as swe
+import os
+
+# Set the path to the ephemeris files
+swe.set_ephe_path('./ephemeris')
 
 def calculate_krishnamurti_ayanamsa():
     try:
