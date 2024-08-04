@@ -2,3 +2,4 @@ streamlit
 pyswisseph
 requests
 git+https://github.com/diliprk/flatlib.git@sidereal#egg=flatlib
+git+https://github.com/diliprk/VedicAstro.git
